@@ -29,8 +29,8 @@ def video_path():
 
 def test_generate_metadata(video_path):
     print("\n\n" + "="*60)
-    print("WARNING: This test involves running the vision model (qwen3-vl:2b).")
-    print("It typically takes ~4 minutes on CPU and ~30 seconds on GPU.")
+    print("WARNING: This test involves running the text model (gemma2:2b).")
+    print("It typically takes ~20 seconds on CPU, does not use GPU acceleration.")
     print("="*60 + "\n")
     
     try:
