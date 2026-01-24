@@ -56,16 +56,21 @@ The workflow consists of three main steps: **Gathering Content**, **Starting AI 
 
 ### Step 1: Download Reels
 
-Use the provided PowerShell script to download reels from an Instagram profile.
+Use the provided Python script to download reels from an Instagram profile. Or use `batch_download_posts.py` to download specific posts.
 
-```powershell
-.\profile-reels-downloader.ps1 "instagram_username"
-```
+All reels from a profile:
 
-_(This wraps `instaloader` to specifically target reels)._
+````powershell
+```bash
+python profile_reels_download.py
+````
 
-> [!IMPORTANT]
-> The scripts downloads videos into a folder named after the profile. You must **move the `.mp4` files from that folder into the `videos/` folder** for the scheduler to see them.
+Reel(s) by ID:
+
+````powershell
+```bash
+python batch_download_posts.py
+````
 
 ### Step 2: Start Ollama
 
@@ -128,7 +133,8 @@ pytest -s tests/test_metadata_extraction.py
 ## Project Structure
 
 - `upload_vids.py`: Main scheduler script.
-- `profile-reels-downloader.ps1`: Helper script to download Instagram Reels.
+- `profile_reels_download.py`: Script to download all Reels from a profile.
+- `batch_download_posts.py`: Script to download specific Reels by ID.
 - `restart_ollama.ps1`: Utility to restart Ollama process.
 - `videos/`: **Input folder** for production videos (move downloads here).
 - `videos_test/`: Input folder for testing.
