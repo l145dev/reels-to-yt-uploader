@@ -13,7 +13,7 @@ def video_path():
     # Calculate path relative to this script file
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(script_dir)
-    videos_dir = os.path.join(project_root, "videos_test")
+    videos_dir = os.path.join(project_root, "tests", "videos_test")
     
     path = ""
     if os.path.exists(videos_dir):

@@ -14,7 +14,7 @@ import upload_vids
 @pytest.fixture
 def test_video_path():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    videos_test_dir = os.path.join(project_root, "videos_test")
+    videos_test_dir = os.path.join(project_root, "tests", "videos_test")
     
     # Ensure videos_test exists
     if not os.path.exists(videos_test_dir):
