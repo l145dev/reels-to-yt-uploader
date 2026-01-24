@@ -51,7 +51,7 @@ pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 o
 
 ## Usage
 
-The workflow consists of two main steps: **Gathering Content** and **Scheduling Uploads**.
+The workflow consists of three main steps: **Gathering Content**, **Starting AI Service**, and **Scheduling Uploads**.
 
 ### Step 1: Download Reels
 
@@ -66,9 +66,25 @@ _(This wraps `instaloader` to specifically target reels)._
 > [!IMPORTANT]
 > The scripts downloads videos into a folder named after the profile. You must **move the `.mp4` files from that folder into the `videos/` folder** for the scheduler to see them.
 
-### Step 2: Start Scheduler
+### Step 2: Start Ollama
 
-Once your `videos/` folder is populated, run the main script:
+Start the Ollama server in a separate terminal to enable AI vision capabilities.
+
+If you don't have qwen3-vl:2b yet, make sure to pull it first:
+
+```bash
+ollama pull qwen3-vl:2b
+```
+
+Then start it:
+
+```bash
+ollama serve
+```
+
+### Step 3: Start Scheduler
+
+Once your `videos/` folder is populated and Ollama is running, run the main script:
 
 ```bash
 python upload_vids.py
