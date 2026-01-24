@@ -1,0 +1,5 @@
+client_secrets.json
+schedule_state.json
+__pycache__
+.pytest_cache
+*.mp4
