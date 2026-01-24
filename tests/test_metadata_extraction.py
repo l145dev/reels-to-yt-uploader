@@ -29,7 +29,7 @@ def video_path():
 
 def test_generate_metadata(video_path):
     print("\n\n" + "="*60)
-    print("WARNING: This test involves running the text model (gemma2:2b).")
+    print("WARNING: This test involves running the text model (gemma3:1b).")
     print("It typically takes ~20 seconds on CPU, does not use GPU acceleration.")
     print("="*60 + "\n")
     
