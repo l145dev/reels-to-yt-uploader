@@ -43,9 +43,13 @@ def get_transcript(video_path):
     print("Extracting video transcript...")
 
     # Extract audio from video temporarily
-    video = VideoFileClip(video_path)
-    audio_path = "temp_audio.mp3"
-    video.audio.write_audiofile(audio_path, logger=None)
+    try:
+        video = VideoFileClip(video_path)
+        audio_path = "temp_audio.mp3"
+        video.audio.write_audiofile(audio_path, logger=None)
+    finally:
+        if 'video' in locals():
+            video.close()
     
     # Load lightweight model ('tiny' or 'base' is enough for context)
     # run on cpu always, the model is small so gpu acceleration is not needed
@@ -56,7 +60,8 @@ def get_transcript(video_path):
     
     # Clean up
     transcript = " ".join([segment.text for segment in segments])
-    os.remove(audio_path)
+    if os.path.exists(audio_path):
+        os.remove(audio_path)
     
     return transcript
 
