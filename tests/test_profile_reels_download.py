@@ -25,7 +25,6 @@ class TestProfileReelsDownload(unittest.TestCase):
             # Verification: Verify the command matches exactly what the script uses
             expected_call = [
                 "instaloader", 
-                "profile", 
                 profile_name, 
                 "--reels", 
                 "+args.txt", 
