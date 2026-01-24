@@ -3,3 +3,4 @@ schedule_state.json
 __pycache__
 .pytest_cache
 *.mp4
+*.mp3
