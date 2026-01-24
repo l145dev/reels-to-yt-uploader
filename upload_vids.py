@@ -4,9 +4,11 @@ import os
 
 import cv2
 import ollama
+from faster_whisper import WhisperModel
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
+from moviepy import VideoFileClip
 
 # Configuration
 VIDEO_FOLDER = "videos"
@@ -38,8 +40,30 @@ def get_next_schedule_time():
     
     return scheduled_time
 
+def get_transcript(video_path):
+    print("Extracting video transcript...")
+
+    # Extract audio from video temporarily
+    video = VideoFileClip(video_path)
+    audio_path = "temp_audio.mp3"
+    video.audio.write_audiofile(audio_path, logger=None)
+    
+    # Load lightweight model ('tiny' or 'base' is enough for context)
+    # run on cpu always, the model is small so gpu acceleration is not needed
+    model = WhisperModel("base", device="cpu", compute_type="int8")
+    
+    # Transcribe
+    segments, _ = model.transcribe(audio_path, beam_size=5)
+    
+    # Clean up
+    transcript = " ".join([segment.text for segment in segments])
+    os.remove(audio_path)
+    
+    return transcript
+
 def generate_metadata(video_path):
-    # 1. Grab a frame
+    print("Generating metadata...")
+    # Grab a frame
     cap = cv2.VideoCapture(video_path)
     ret, frame = cap.read()
     cap.release()
@@ -51,9 +75,23 @@ def generate_metadata(video_path):
     temp_img = "temp_view_test.jpg"
     cv2.imwrite(temp_img, frame)
 
-    # 2. Ask Ollama (est. 4min per video on cpu)
+    # Get transcript
+    transcript = get_transcript(video_path)
+
+    # Ask Ollama (est. 4min per video on cpu, 30s on gpu)
     print("Asking Ollama to generate title/description...")
-    prompt = "Generate a short, catchy YouTube Shorts title and a 1-sentence description. Return format in JSON: {title: str, description: str}"
+    prompt = prompt = f"""
+                        Analyze the image and the transcript below.
+                        TRANSCRIPT: "{transcript}"
+
+                        INSTRUCTIONS:
+                        1. The transcript contains the actual topic. Use it as your primary source.
+                        2. The image just shows the visual style.
+                        3. Create a viral YouTube Shorts title and 1-sentence description.
+
+                        OUTPUT FORMAT (Valid JSON only):
+                        {{"title": "[Topic] Tips/Tricks/Hacks or Explaining [Topic]", "description": "Explaining how [topic] works with tips."}}
+                        """
     
     try:
         response = ollama.chat(model=OLLAMA_MODEL, messages=[
@@ -115,9 +153,10 @@ def main():
     current_schedule = get_next_schedule_time()
 
     for video in videos:
-        print(f"Processing video: {video}. This may take a few minutes.")
+        print(f"Processing video: {video}. This may take a while.")
         video_path = os.path.join(VIDEO_FOLDER, video)
         
+        # If upload fails, video will not be deleted
         try:
             upload_video(youtube, video_path, current_schedule)
             
@@ -133,6 +172,8 @@ def main():
             
         except Exception as e:
             print(f"Failed to upload {video}: {e}")
+            # break the loop if upload fails
+            break
 
 if __name__ == "__main__":
     main()
