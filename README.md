@@ -60,17 +60,18 @@ Use the provided Python script to download reels from an Instagram profile. Or u
 
 All reels from a profile:
 
-````powershell
 ```bash
 python profile_reels_download.py
-````
+```
+
+> [!NOTE]
+> The script above may face rate limit issues with Instagram.
 
 Reel(s) by ID:
 
-````powershell
 ```bash
 python batch_download_posts.py
-````
+```
 
 ### Step 2: Start Ollama
 
@@ -117,17 +118,16 @@ For testing purposes without uploading to your real channel:
 
 **Run Unit Tests:**
 
+Short tests only:
+
 ```bash
 pytest tests
 ```
 
-**Run Full AI Inference Test:**
-
-> [!NOTE]
-> This test runs the actual AI model. Takes ~20 seconds on CPU.
+Or run all tests (full coverage):
 
 ```bash
-pytest -s tests/test_metadata_extraction.py
+pytest
 ```
 
 ## Project Structure
