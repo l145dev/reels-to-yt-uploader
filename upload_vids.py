@@ -9,7 +9,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 # Configuration
-VIDEO_FOLDER = "videos_test"
+VIDEO_FOLDER = "videos"
 STATE_FILE = "schedule_state.json"
 CLIENT_SECRETS_FILE = "client_secrets.json"
 OLLAMA_MODEL = "qwen3-vl:2b"  # Needs to be a vision model to see the snapshot
