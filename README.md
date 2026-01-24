@@ -134,3 +134,11 @@ pytest -s tests/test_metadata_extraction.py
 - `videos_test/`: Input folder for testing.
 - `client_secrets.json`: YouTube API credentials.
 - `schedule_state.json`: Database of the last scheduled upload date.
+
+## Contributing
+
+Contributions are welcome! Feel free to open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
