@@ -1,3 +1,5 @@
+# note: you may face rate limit issues with this
+
 import os
 import subprocess
 
