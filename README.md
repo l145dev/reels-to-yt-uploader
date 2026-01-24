@@ -9,18 +9,18 @@ This project allows you to bulk download Reels from any public Instagram profile
 
 ```mermaid
 graph TD
-    A[Start] --> B[Download Reels via Instaloader]
-    B --> C[Move to 'videos/' folder]
-    C --> D(Scan 'videos/' folder)
-    D --> E{Videos found?}
+    A[Start] --> B["Download Reels via Instaloader"]
+    B --> C["Move to 'videos/' folder"]
+    C --> D("Scan 'videos/' folder")
+    D --> E{"Videos found?"}
     E -- Yes --> F[Select Video]
     E -- No --> Z[End]
-    F --> G[Extract Transcript (Whisper)]
+    F --> G["Extract Transcript (Whisper)"]
     G --> H["Send to Ollama (Text LLM)"]
-    H --> I[Generate Title & Description]
+    H --> I["Generate Title & Description"]
     I --> J["Upload to YouTube (Private/Scheduled)"]
-    J --> K[Update 'schedule_state.json']
-    K --> L[Delete Local Video]
+    J --> K["Update 'schedule_state.json'"]
+    K --> L["Delete Local Video"]
     L --> D
 ```
 
