@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-VIDEO_FOLDER = "test_download"
+VIDEO_FOLDER = "videos"
 
 def download_profile_reels(profile_name):
     print("Downloading reels...")
