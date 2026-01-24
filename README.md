@@ -112,7 +112,7 @@ It will:
 
 For testing purposes without uploading to your real channel:
 
-1.  Place sample videos in `videos_test/`.
+1.  Place sample videos in `tests/videos_test/`.
 2.  Run the tests:
 
 **Run Unit Tests:**
@@ -137,7 +137,7 @@ pytest -s tests/test_metadata_extraction.py
 - `batch_download_posts.py`: Script to download specific Reels by ID.
 - `restart_ollama.ps1`: Utility to restart Ollama process.
 - `videos/`: **Input folder** for production videos (move downloads here).
-- `videos_test/`: Input folder for testing.
+- `tests/videos_test/`: Input folder for testing.
 - `client_secrets.json`: YouTube API credentials.
 - `schedule_state.json`: Database of the last scheduled upload date.
 
