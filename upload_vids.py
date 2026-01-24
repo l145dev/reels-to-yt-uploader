@@ -2,7 +2,6 @@ import datetime
 import json
 import os
 
-import cv2
 import ollama
 from faster_whisper import WhisperModel
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -14,7 +13,7 @@ from moviepy import VideoFileClip
 VIDEO_FOLDER = "videos"
 STATE_FILE = "schedule_state.json"
 CLIENT_SECRETS_FILE = "client_secrets.json"
-OLLAMA_MODEL = "qwen3-vl:2b"  # Needs to be a vision model to see the snapshot
+OLLAMA_MODEL = "gemma3:1b"  # Text-only model
 SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
 
 def get_authenticated_service():
@@ -63,40 +62,35 @@ def get_transcript(video_path):
 
 def generate_metadata(video_path):
     print("Generating metadata...")
-    # Grab a frame
-    cap = cv2.VideoCapture(video_path)
-    ret, frame = cap.read()
-    cap.release()
-    
-    if not ret:
-        return "Daily Short", "Cool video #shorts"
-    
-    # Save temp frame
-    temp_img = "temp_view_test.jpg"
-    cv2.imwrite(temp_img, frame)
 
     # Get transcript
     transcript = get_transcript(video_path)
 
-    # Ask Ollama (est. 4min per video on cpu, 30s on gpu)
+    # Ask Ollama 
     print("Asking Ollama to generate title/description...")
-    prompt = prompt = f"""
-                        Analyze the image and the transcript below.
-                        TRANSCRIPT: "{transcript}"
+    prompt = f"""
+    You are a YouTube Shorts creator. The text below is the spoken content of your video.
+    CONTENT: "{transcript}"
 
-                        INSTRUCTIONS:
-                        1. The transcript contains the actual topic. Use it as your primary source.
-                        2. The image just shows the visual style.
-                        3. Create a viral YouTube Shorts title and 1-sentence description.
+    TASK:
+    Write a viral Title and Description to post on YouTube.
 
-                        OUTPUT FORMAT (Valid JSON only):
-                        {{"title": "[Topic] Tips/Tricks/Hacks or Explaining [Topic]", "description": "Explaining how [topic] works with tips."}}
-                        """
+    CRITICAL RULES:
+    1. Speak directly to the audience (use "You", "Your").
+    2. STRICTLY FORBIDDEN: Do not use words like "transcript", "video", "audio", "summary", or "text".
+    3. Make it sound immediate and urgent.
+
+    EXAMPLE OUTPUT (Follow this style):
+    {{"title": "Your Phone is DIRTY 🦠", "description": "You won't believe how much bacteria is crawling on your screen right now."}}
+
+    OUTPUT FORMAT:
+    Return ONLY valid JSON.
+    """
     
     try:
         response = ollama.chat(model=OLLAMA_MODEL, messages=[
-            {'role': 'user', 'content': prompt, 'images': [temp_img]}
-        ], format='json', options={'num_gpu': 99})
+            {'role': 'user', 'content': prompt}
+        ], format='json', options={'num_gpu': 99}) # usually will not use gpu acceleration (not heavy)
         content = response['message']['content']
         print(f"Ollama response: {content}")
         
@@ -112,9 +106,6 @@ def generate_metadata(video_path):
     except Exception as e:
         print(f"Metadata generation failed: {e}")
         return "Daily Upload", "Check this out! #shorts"
-    finally:
-        if os.path.exists(temp_img):
-            os.remove(temp_img)
 
 def upload_video(youtube, path, date_time):
     title, description = generate_metadata(path)
@@ -147,8 +138,8 @@ def main():
     youtube = get_authenticated_service()
     videos = [f for f in os.listdir(VIDEO_FOLDER) if f.endswith(('.mp4', '.mov'))]
     print(f"Found {len(videos)} videos to process.")
-    print(f"Estimated time on CPU: {len(videos) * 4} minutes.")
-    print(f"Estimated time on GPU: {len(videos)} minutes.")
+    print(f"Estimated time on CPU: {len(videos)} minutes.") # 1 min per video
+    # print(f"Estimated time on GPU: {len(videos) / 12} minutes.") # 20s per video, but usually does not use gpu acceleration
 
     current_schedule = get_next_schedule_time()
 
