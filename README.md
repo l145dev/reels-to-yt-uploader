@@ -9,9 +9,9 @@ graph TD
     C -- Yes --> D[Select Video]
     C -- No --> Z[End]
     D --> E[Capture Frame Snapshot]
-    E --> F[Send to Ollama (qwen3-vl:2b)]
+    E --> F["Send to Ollama (qwen3-vl:2b)"]
     F --> G[Generate Title & Description]
-    G --> H[Upload to YouTube (Private/Scheduled)]
+    G --> H["Upload to YouTube (Private/Scheduled)"]
     H --> I[Update 'schedule_state.json']
     I --> J[Delete Local Video]
     J --> B
