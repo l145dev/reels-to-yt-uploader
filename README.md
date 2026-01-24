@@ -1,28 +1,35 @@
-# YouTube Auto-Scheduler
+# Reels to Youtube Scheduler
 
-This project automates the daily scheduling of YouTube Shorts. It scans a folder for video files, generates catchy titles and descriptions using a local AI vision model (Ollama), and schedules them to be uploaded to YouTube one by one, continuously incrementing the schedule date.
+**Automate the pipeline of fetching Instagram Reels and scheduling them as YouTube Shorts.**
+
+This project allows you to bulk download Reels from any public Instagram profile and automatically schedule them for daily uploads on YouTube. It uses a local AI vision model (Ollama) to watch each video and generate a catchy, relevant title and description before scheduling.
+
+> [!NOTE]
+> I do not endorse stealing content, only use this if it's your instagram profile.
 
 ```mermaid
 graph TD
-    A[Start] --> B(Scan 'videos/' folder)
-    B --> C{Videos found?}
-    C -- Yes --> D[Select Video]
-    C -- No --> Z[End]
-    D --> E[Capture Frame Snapshot]
-    E --> F["Send to Ollama (qwen3-vl:2b)"]
-    F --> G[Generate Title & Description]
-    G --> H["Upload to YouTube (Private/Scheduled)"]
-    H --> I[Update 'schedule_state.json']
-    I --> J[Delete Local Video]
-    J --> B
+    A[Start] --> B[Download Reels via Instaloader]
+    B --> C[Move to 'videos/' folder]
+    C --> D(Scan 'videos/' folder)
+    D --> E{Videos found?}
+    E -- Yes --> F[Select Video]
+    E -- No --> Z[End]
+    F --> G[Capture Frame Snapshot]
+    G --> H["Send to Ollama (AI Vision)"]
+    H --> I[Generate Title & Description]
+    I --> J["Upload to YouTube (Private/Scheduled)"]
+    J --> K[Update 'schedule_state.json']
+    K --> L[Delete Local Video]
+    L --> D
 ```
 
 ## Features
 
-- **Automatic Scheduling**: Uploads one video per day, scheduled for 12:00 PM.
-- **AI Metadata Generation**: Uses `Ollama` and `qwen3-vl:2b` to watch the video "snapshot" and generate a relevant title and description.
-- **Persistent State**: Remembers the last scheduled date so it doesn't overlap uploads, even if restarted.
-- **Recursive Processing**: Deletes local files after successful upload to keep the folder clean.
+- **Instagram Reels Downloader**: Easily fetch all reels from a target profile using `instaloader`.
+- **Automatic Scheduling**: Queues one video per day, scheduled for 12:00 PM (noon).
+- **AI Metadata Generation**: Uses `Ollama` (with `qwen3-vl:2b` vision model) to analyze the video content and write a unique title and description.
+- **Set & Forget**: Persistent state tracking ensures the schedule continues smoothly even after restarts.
 
 ## Prerequisites
 
@@ -36,34 +43,32 @@ graph TD
 
 ## Installation
 
-Install the required Python packages:
+Install the required Python packages (including `instaloader`):
 
 ```bash
-pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 opencv-python ollama pytest
+pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 opencv-python ollama instaloader pytest
 ```
 
 ## Usage
 
-### 0. Gather Content (Optional)
+The workflow consists of two main steps: **Gathering Content** and **Scheduling Uploads**.
 
-You can download Instagram Reels from any public profile to use as your source material.
+### Step 1: Download Reels
 
-Run the provided PowerShell script:
+Use the provided PowerShell script to download reels from an Instagram profile.
 
 ```powershell
 .\profile-reels-downloader.ps1 "instagram_username"
 ```
 
-_This uses `instaloader` to fetch reels._
+_(This wraps `instaloader` to specifically target reels)._
 
 > [!IMPORTANT]
-> After downloading, move the `.mp4` video files from the downloaded folder into the `videos/` folder so the scheduler can find them.
+> The scripts downloads videos into a folder named after the profile. You must **move the `.mp4` files from that folder into the `videos/` folder** for the scheduler to see them.
 
-### 1. Production
+### Step 2: Start Scheduler
 
-Place your `.mp4` or `.mov` files into the `videos/` folder.
-
-Run the script:
+Once your `videos/` folder is populated, run the main script:
 
 ```bash
 python upload_vids.py
@@ -72,14 +77,17 @@ python upload_vids.py
 It will:
 
 1.  Authenticate with YouTube (browser popup on first run).
-2.  Process each video in `videos/`.
-3.  Generate metadata via Ollama.
-4.  Upload as "Private" scheduled for the next available day.
-5.  Delete the local file.
+2.  Process each video in `videos/` sequentially.
+3.  Generate AI metadata.
+4.  Upload the video as "Private" and scheduled for the next available slot.
+5.  Delete the local file to save space.
 
-### 2. Development & Testing
+## Development & Testing
 
-For testing, place sample videos in `videos_test/`.
+For testing purposes without uploading to your real channel:
+
+1.  Place sample videos in `videos_test/`.
+2.  Run the tests:
 
 **Run Unit Tests:**
 
@@ -87,30 +95,27 @@ For testing, place sample videos in `videos_test/`.
 pytest tests
 ```
 
-**Run All Tests (including AI inference):**
+**Run Full AI Inference Test:**
 
 > [!NOTE]
-> The metadata extraction test runs the actual AI model. This takes ~4 minutes on CPU or ~30 seconds on a GPU (RTX 4060+ recommended).
+> This test runs the actual AI model. Takes ~4 minutes on CPU or ~30 seconds on GPU (RTX 4060+).
 
 ```bash
 pytest -s tests/test_metadata_extraction.py
 ```
 
-_(Use `-s` to enable the interactive prompt confirming you want to run the slow test)_
-
 ## GPU Optimization
 
-To make metadata generation significantly faster, ensure Ollama is using your GPU.
+To speed up metadata generation, ensure Ollama is using your GPU.
 
 1.  Install NVIDIA Drivers.
-2.  Run `ollama serve` in a separate terminal to see logs.
-3.  If it doesn't detect your GPU (e.g., on a laptop), typically waking the GPU by opening "NVIDIA Control Panel" and restarting Ollama helps.
+2.  Run `ollama serve` in a separate terminal to check logs.
 
 ## Project Structure
 
-- `upload_vids.py`: Main execution script.
-- `videos/`: Input folder for production videos.
-- `videos_test/`: Input folder for test videos.
-- `client_secrets.json`: Your YouTube API credentials (do not commit this!).
-- `schedule_state.json`: Tracks the database of the last scheduled upload.
-- `tests/`: Contains `pytest` tests.
+- `upload_vids.py`: Main scheduler script.
+- `profile-reels-downloader.ps1`: Helper script to download Instagram Reels.
+- `videos/`: **Input folder** for production videos (move downloads here).
+- `videos_test/`: Input folder for testing.
+- `client_secrets.json`: YouTube API credentials.
+- `schedule_state.json`: Database of the last scheduled upload date.
