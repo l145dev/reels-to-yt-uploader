@@ -5,7 +5,7 @@ VIDEO_FOLDER = "videos"
 
 def download_profile_reels(profile_name):
     print("Downloading reels...")
-    subprocess.run(["instaloader", "profile", profile_name, "--reels", "+args.txt", "--dirname-pattern=" + VIDEO_FOLDER], check=True)
+    subprocess.run(["instaloader", profile_name, "--reels", "+args.txt", "--dirname-pattern=" + VIDEO_FOLDER], check=True)
 
 def delete_profile_id(profile_name):
     print("Deleting profile id...")
