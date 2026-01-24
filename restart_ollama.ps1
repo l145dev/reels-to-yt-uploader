@@ -1,0 +1,1 @@
+Stop-Process -Name "ollama app" -Force -ErrorAction SilentlyContinue; Stop-Process -Name "ollama" -Force -ErrorAction SilentlyContinue; ollama serve
