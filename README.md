@@ -2,7 +2,7 @@
 
 **Automate the pipeline of fetching Instagram Reels and scheduling them as YouTube Shorts.**
 
-This project allows you to bulk download Reels from any public Instagram profile and automatically schedule them for daily uploads on YouTube. It uses a local AI vision model (Ollama) to watch each video and generate a catchy, relevant title and description before scheduling.
+This project allows you to bulk download Reels from any public Instagram profile and automatically schedule them for daily uploads on YouTube. It uses a **local AI text model (Ollama)** to read the transcript of each video and generate a catchy, viral title and description before scheduling.
 
 > [!NOTE]
 > I do not endorse stealing content, only use this if it's your instagram profile, or if someone gave you permission to run it on their profile.
@@ -15,8 +15,8 @@ graph TD
     D --> E{Videos found?}
     E -- Yes --> F[Select Video]
     E -- No --> Z[End]
-    F --> G[Capture Frame Snapshot]
-    G --> H["Send to Ollama (AI Vision)"]
+    F --> G[Extract Transcript (Whisper)]
+    G --> H["Send to Ollama (Text LLM)"]
     H --> I[Generate Title & Description]
     I --> J["Upload to YouTube (Private/Scheduled)"]
     J --> K[Update 'schedule_state.json']
@@ -28,14 +28,15 @@ graph TD
 
 - **Instagram Reels Downloader**: Easily fetch all reels from a target profile using `instaloader`.
 - **Automatic Scheduling**: Queues one video per day, scheduled for 12:00 PM (noon).
-- **AI Metadata Generation**: Uses `Ollama` (with `qwen3-vl:2b` vision model) to analyze the video content and write a unique title and description.
+- **AI Metadata Generation**: Uses `faster-whisper` to extract speech and `Ollama` (with `gemma3:1b`) to write a unique title and description based on the transcript.
+- **Viral Content**: Uses a tuned system prompt to generate high-retention, "click-baity" titles suitable for Shorts.
 - **Set & Forget**: Persistent state tracking ensures the schedule continues smoothly even after restarts.
 
 ## Prerequisites
 
 1.  **Python 3.10+**
 2.  **Ollama**: Download and install from [ollama.com](https://ollama.com).
-    - Pull the vision model: `ollama pull qwen3-vl:2b`
+    - Pull the text model: `ollama pull gemma3:1b`
 3.  **Google Cloud Project**:
     - Enable the "YouTube Data API v3".
     - Create OAuth 2.0 Credentials (Desktop App).
@@ -43,10 +44,10 @@ graph TD
 
 ## Installation
 
-Install the required Python packages (including `instaloader`):
+Install the required Python packages:
 
 ```bash
-pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 opencv-python ollama instaloader pytest
+pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 ollama instaloader pytest faster-whisper moviepy
 ```
 
 ## Usage
@@ -68,12 +69,12 @@ _(This wraps `instaloader` to specifically target reels)._
 
 ### Step 2: Start Ollama
 
-Start the Ollama server in a separate terminal to enable AI vision capabilities.
+Start the Ollama server in a separate terminal.
 
-If you don't have qwen3-vl:2b yet, make sure to pull it first:
+If you don't have `gemma3:1b` yet, make sure to pull it first:
 
 ```bash
-ollama pull qwen3-vl:2b
+ollama pull gemma3:1b
 ```
 
 Then start it:
@@ -81,6 +82,9 @@ Then start it:
 ```bash
 ollama serve
 ```
+
+> [!TIP]
+> Use `.\restart_ollama.ps1` to quickly restart the Ollama service if it gets stuck.
 
 ### Step 3: Start Scheduler
 
@@ -94,9 +98,10 @@ It will:
 
 1.  Authenticate with YouTube (browser popup on first run).
 2.  Process each video in `videos/` sequentially.
-3.  Generate AI metadata.
-4.  Upload the video as "Private" and scheduled for the next available slot.
-5.  Delete the local file to save space.
+3.  Extract transcript using Whisper (CPU-optimized).
+4.  Generate AI metadata using Ollama.
+5.  Upload the video as "Private" and scheduled for the next available slot.
+6.  Delete the local file to save space.
 
 ## Development & Testing
 
@@ -114,23 +119,17 @@ pytest tests
 **Run Full AI Inference Test:**
 
 > [!NOTE]
-> This test runs the actual AI model. Takes ~4 minutes on CPU or ~30 seconds on GPU (RTX 4060+).
+> This test runs the actual AI model. Takes ~20 seconds on CPU.
 
 ```bash
 pytest -s tests/test_metadata_extraction.py
 ```
 
-## GPU Optimization
-
-To speed up metadata generation, ensure Ollama is using your GPU.
-
-1.  Install NVIDIA Drivers.
-2.  Run `ollama serve` in a separate terminal to check logs.
-
 ## Project Structure
 
 - `upload_vids.py`: Main scheduler script.
 - `profile-reels-downloader.ps1`: Helper script to download Instagram Reels.
+- `restart_ollama.ps1`: Utility to restart Ollama process.
 - `videos/`: **Input folder** for production videos (move downloads here).
 - `videos_test/`: Input folder for testing.
 - `client_secrets.json`: YouTube API credentials.
