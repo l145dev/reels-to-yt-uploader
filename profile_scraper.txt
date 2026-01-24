@@ -1,0 +1,14 @@
+// temporary as long as profile_reels_download.py is not fixed
+
+var list_of_css = ".x1i10hfl xjbqb8w x1ejq31n x18oe1m7 x1sy0etr xstzfhl x972fbf x10w94by x1qhh985 x14e42zd x9f619 x1ypdohk xt0psk2 x3ct3a4 xdj266r x14z9mp xat24cr x1lziwak xexx8yu xyri2b x18d9i69 x1c1uobl x16tdsg8 x1hl2dhg xggy1nq x1a2a7pz _a6hd".split(" ")
+
+// Get elements using the joined selector
+var elements = document.querySelectorAll(list_of_css.join("."))
+
+// Extract href, split by slash, and grab the last part
+var ids = Array.from(elements).map((el) => {
+    let href_parts = el.href.split("/")
+    return href_parts[href_parts.length - 2] 
+})
+
+console.log(ids)
