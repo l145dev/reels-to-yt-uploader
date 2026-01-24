@@ -5,7 +5,7 @@
 This project allows you to bulk download Reels from any public Instagram profile and automatically schedule them for daily uploads on YouTube. It uses a local AI vision model (Ollama) to watch each video and generate a catchy, relevant title and description before scheduling.
 
 > [!NOTE]
-> I do not endorse stealing content, only use this if it's your instagram profile.
+> I do not endorse stealing content, only use this if it's your instagram profile, or if someone gave you permission to run it on their profile.
 
 ```mermaid
 graph TD
