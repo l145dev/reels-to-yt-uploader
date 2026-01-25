@@ -46,6 +46,14 @@ graph TD
 
 Install the required Python packages:
 
+Using `requirements.txt`:
+
+```bash
+pip install -r requirements.txt
+```
+
+Manually:
+
 ```bash
 pip install google-api-python-client google-auth-oauthlib google-auth-httplib2 ollama instaloader pytest faster-whisper moviepy
 ```
@@ -147,9 +155,15 @@ pytest -s
 - `batch_download_posts.py`: Script to download specific Reels by ID.
 - `restart_ollama.ps1`: Utility to restart Ollama process.
 - `videos/`: **Input folder** for production videos (move downloads here).
-- `tests/videos_test/`: Input folder for testing.
-- `client_secrets.json`: YouTube API credentials.
+- `azure/`: Deployment scripts and configuration:
+  - `server_to_cloud.ps1`: Main deployment script.
+  - `upload_new_videos.ps1`: Script to just upload videos without redeploying.
+  - `Dockerfile`: Docker configuration for the cloud environment.
+  - `.env`: configuration for the deployment scripts.
+- `tests/`: Unit and integration tests.
+- `client_secrets.json` & `token.json`: YouTube API credentials.
 - `schedule_state.json`: Database of the last scheduled upload date.
+- `requirements.txt`: Python package dependencies.
 
 ## Contributing
 
