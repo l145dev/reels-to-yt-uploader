@@ -15,16 +15,20 @@ The deployment process involves:
 ### 1. Azure VM
 
 - An Azure VM (e.g., Ubuntu) with Docker installed.
-- **IP Address**: Currently configured as `20.199.136.72` in `server_to_cloud.ps1`. (replace `20.199.136.72` with your VM's IP address)
-- **User**: `azureuser`. (replace `azureuser` with your VM's username)
+- **Configuration**: Create a file named `.env` in the `azure/` directory with the following content:
+  ```ini
+  VM_PUBLIC_IP="x.x.x.x"
+  KEY_NAME="your_key_name"
+  VM_USERNAME="azureuser"
+  ```
 
 ### 2. Authentication Files
 
-Ensure the following files are present in the project root (they are **ignored** by git for security):
+Ensure the following files are present in the project root:
 
 - `client_secrets.json`: Google Cloud OAuth credentials (Desktop App).
 - `token.json`: Generated after the first local run (stores the refresh token).
-- `azure/{key}.pem`: SSH private key for the Azure VM. (replace `{key}` with your key's name)
+- `azure/<KEY_NAME>.pem`: SSH private key for the Azure VM (must match `KEY_NAME` in `.env`).
 
 ### 3. State Management
 

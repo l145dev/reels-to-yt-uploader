@@ -1,10 +1,26 @@
 # deploy-scheduler.ps1
 # Usage: pwsh ./deploy-scheduler.ps1
 
+# Load .env file
+$envPath = "azure/.env"
+if (Test-Path $envPath) {
+    Get-Content $envPath | ForEach-Object {
+        $line = $_.Trim()
+        if ($line -notmatch "^#" -and $line -match "=") {
+            $name, $value = $line -split "=", 2
+            $value = $value.Trim('"').Trim("'") # Remove quotes
+            Set-Variable -Name $name -Value $value
+        }
+    }
+} else {
+    Write-Error "Error: 'azure/.env' file not found. Please create it with VM_PUBLIC_IP, KEY_NAME, and VM_USERNAME."
+    exit 1
+}
+
 # Configuration
-$vmIp = "20.199.136.72"
-$keyPath = "azure/chessbot-backend_key.pem" # run from project root
-$remoteUser = "azureuser"
+$vmIp = $VM_PUBLIC_IP
+$keyPath = "azure/${KEY_NAME}.pem" # run from project root
+$remoteUser = $VM_USERNAME
 $tempDir = "dist_scheduler_temp"
 
 Write-Host "Starting Scheduler Deployment to Azure ($vmIp)..." -ForegroundColor Cyan
