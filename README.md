@@ -109,6 +109,16 @@ It will:
 5.  Upload the video as "Private" and scheduled for the next available slot.
 6.  Delete the local file to save space.
 
+## Deployment
+
+This project includes a fully automated deployment pipeline for Azure using Docker.
+
+- **Infrastructure**: Azure VM running Docker.
+- **Automation**: `azure/server_to_cloud.ps1` handles bundling, uploading, and restarting the service.
+- **Persistence**: Usage data and video files are persisted on the VM using Docker volumes.
+
+For detailed deployment instructions, credentials setup, and maintenance commands, see [azure/README.md](azure/README.md).
+
 ## Development & Testing
 
 For testing purposes without uploading to your real channel:
