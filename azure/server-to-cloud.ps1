@@ -17,7 +17,7 @@ New-Item -ItemType Directory -Force -Path $tempDir | Out-Null
 Write-Host "Bundling necessary files..." -ForegroundColor Yellow
 
 # Copy Core Files
-Copy-Item "Dockerfile"          -Destination "$tempDir/Dockerfile"
+Copy-Item "azure/Dockerfile"          -Destination "$tempDir/Dockerfile"
 Copy-Item "upload_vids.py"      -Destination "$tempDir/upload_vids.py"
 Copy-Item "requirements.txt"    -Destination "$tempDir/requirements.txt"
 
