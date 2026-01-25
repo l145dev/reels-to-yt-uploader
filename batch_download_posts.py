@@ -1,6 +1,6 @@
 import subprocess
 
-VIDEO_FOLDER = "videos"
+VIDEO_FOLDER = "new_videos"
 
 
 def batch_install(posts):
