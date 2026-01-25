@@ -131,13 +131,13 @@ For testing purposes without uploading to your real channel:
 Short tests only:
 
 ```bash
-pytest tests
+pytest
 ```
 
 Or run all tests (full coverage):
 
 ```bash
-pytest
+pytest -s
 ```
 
 ## Project Structure
