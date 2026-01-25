@@ -19,7 +19,7 @@ COPY token.json .
 
 # Create necessary directories
 RUN mkdir videos
-RUN touch schedule_state.json
+RUN echo "{}" > schedule_state.json
 
 # Setup Cron for 11 PM
 # We use the timezone mount trick so 23:00 means 23:00 Belgium time
