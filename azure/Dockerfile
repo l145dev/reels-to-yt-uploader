@@ -23,7 +23,7 @@ RUN echo "{}" > schedule_state.json
 
 # Setup Cron for 11 PM
 # We use the timezone mount trick so 23:00 means 23:00 Belgium time
-RUN echo "0 23 * * * root /usr/local/bin/python /app/upload_vids.py >> /var/log/cron.log 2>&1" > /etc/cron.d/scheduler
+RUN echo "0 23 * * * cd /app && /usr/local/bin/python /app/upload_vids.py >> /var/log/cron.log 2>&1" > /etc/cron.d/scheduler
 
 # Give execution rights on the cron job
 RUN chmod 0644 /etc/cron.d/scheduler
