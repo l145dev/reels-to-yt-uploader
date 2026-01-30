@@ -72,7 +72,7 @@ $commands = @(
 
     # E. Run New Container
     # Note the Volume Mounts: We map the PERSISTENT data folder, not the build folder.
-    "sudo docker run -d --name scheduler --restart unless-stopped -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro -v ~/scheduler_data/videos:/app/videos -v ~/scheduler_data/schedule_state.json:/app/schedule_state.json youtube-scheduler"
+    "sudo docker run -d --name scheduler --restart unless-stopped -e OLLAMA_HOST=http://172.17.0.1:11434 -v /etc/timezone:/etc/timezone:ro -v /etc/localtime:/etc/localtime:ro -v ~/scheduler_data/videos:/app/videos -v ~/scheduler_data/schedule_state.json:/app/schedule_state.json youtube-scheduler"
 )
 
 ssh -i $keyPath ${remoteUser}@${vmIp} ($commands -join " && ")
