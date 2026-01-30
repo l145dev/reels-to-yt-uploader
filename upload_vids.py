@@ -110,10 +110,18 @@ def generate_metadata(video_path):
     Return ONLY valid JSON.
     """
     
+    # Initialize client explicitly
     try:
-        response = ollama.chat(model=OLLAMA_MODEL, messages=[
+        host = os.environ.get('OLLAMA_HOST', 'http://host.docker.internal:11434')
+        if "127.0.0.1" in host or "localhost" in host:
+             # Fallback if env var is weird, but try to use what's given
+             pass
+        
+        client = ollama.Client(host=host)
+        
+        response = client.chat(model=OLLAMA_MODEL, messages=[
             {'role': 'user', 'content': prompt}
-        ], format='json', options={'num_gpu': 99}) # usually will not use gpu acceleration (not heavy)
+        ], format='json', options={'num_gpu': 0}) # Force CPU to save memory
         content = response['message']['content']
         print(f"Ollama response: {content}")
         
